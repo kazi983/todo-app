@@ -1,0 +1,30 @@
+{
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.2",
+    "eslint": "^10.11.0",
+    "eslint-plugin-jsdoc": "^64.5.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.1",
+    "prettier": "3.9.9",
+    "typescript": "^7.0.2"
+  },
+  "name": "todo-server",
+  "module": "src/ts/server.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "tsx --watch src/ts/server.ts",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
+}
