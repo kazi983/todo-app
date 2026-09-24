@@ -95,15 +95,22 @@ app.get("/todos/{:id}", (req: Request, res: Response) => {
 app.post("/todos", (req: Request, res: Response) => {
   const body = req.body;
 
+  let completed = false;
+
   if (!("title" in body)) {
     res.status(400).json({
       error: "Required field is missing: title",
     });
   }
+  if ("completed" in body) {
+    completed = body.completed;
+  }
 
-  todos.push({ id: ++latestId, title: body.title, completed: false });
+  const newTodo = { id: ++latestId, title: body.title, completed };
 
-  res.status(201).json({ message: "A todo created", todos });
+  todos.push(newTodo);
+
+  res.status(201).json(newTodo);
 });
 
 // PUT /todos/:id
@@ -134,7 +141,7 @@ app.put("/todos/{:id}", (req: Request, res: Response) => {
     todo.completed = body.completed;
   }
 
-  res.status(200).json({ message: "A todo updated", todo });
+  res.status(200).json(todo);
 });
 
 // DELETE /todos/:id
@@ -149,7 +156,7 @@ app.delete("/todos/{:id}", (req: Request, res: Response) => {
   const index = todos.findIndex((todo) => todo.id === id)!;
   todos.splice(index, 1);
 
-  res.status(200).json({ message: "A todo removed", todos });
+  res.sendStatus(204);
 });
 
 // Handle requests to undefined routes.
