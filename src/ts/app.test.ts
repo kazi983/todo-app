@@ -221,6 +221,16 @@ describe("PUT /todos/:id", () => {
     expect(res.status).toBe(400);
   });
 
+  test("returns 400 when completed is missing", async () => {
+    const created = await createTodo({ title: "Keep me" });
+
+    const res = await request("PUT", `/todos/${created.id}`, {
+      title: "New title",
+    });
+
+    expect(res.status).toBe(400);
+  });
+
   test("leaves the todo unchanged when validation fails", async () => {
     const created = await createTodo({ title: "Keep me" });
     await request("PUT", `/todos/${created.id}`, { completed: true });
