@@ -120,7 +120,7 @@ app.post("/todos", (req: Request, res: Response) => {
 
   todos.push({ id: body.id, title: body.title, completed: body.completed });
 
-  res.status(200).json({ message: "A todo created", todos });
+  res.status(201).json({ message: "A todo created", todos });
 });
 
 // PUT /todos/:id
