@@ -123,8 +123,26 @@ app.put("/todos/{:id}", (req: Request, res: Response) => {
     return;
   }
 
-  // TODO
-  // res.status(200).json({ message: "A todo updated" });
+  const body = req.body;
+
+  if (Object.keys(body).length === 0) {
+    res.status(400).json({
+      error: "At least one field must be provided in the request body",
+    });
+    return;
+  }
+
+  const todo = todos.find((todo) => todo.id === id)!;
+
+  if ("title" in body) {
+    todo.title = body.title;
+  }
+
+  if ("completed" in body) {
+    todo.completed = body.completed;
+  }
+
+  res.status(200).json({ message: "A todo updated", todo });
 });
 
 // DELETE /todos/:id
