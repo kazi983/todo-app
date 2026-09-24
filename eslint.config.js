@@ -1,15 +1,20 @@
-import jsdoc from 'eslint-plugin-jsdoc';
+import jsdoc from "eslint-plugin-jsdoc";
+import tseslint from "typescript-eslint";
 
 export default [
   {
+    files: ["**/*.ts"],
+    languageOptions: {
+      parser: tseslint.parser,
+    },
     plugins: {
       jsdoc: jsdoc,
     },
     rules: {
-      'jsdoc/require-jsdoc': 'error',
-      'jsdoc/check-param-names': 'error',
-      'jsdoc/require-param-type': 'error',
-      'jsdoc/require-returns-type': 'error',
+      "jsdoc/require-jsdoc": "error",
+      "jsdoc/check-param-names": "error",
+      "jsdoc/require-param-type": "error",
+      "jsdoc/require-returns-type": "error",
     },
   },
 ];
