@@ -31,10 +31,6 @@ todos.push({ id: 1, title: "Buy groceries", completed: false });
 // Function
 // ==========================================================================
 
-/**
- * Logs the HTTP request method and URL
- * @param {Request} req - The incoming HTTP request.
- */
 function reqLogger(req: Request, res: Response, next: NextFunction) {
   console.log(`${req.method}: ${req.url}`);
   next();
