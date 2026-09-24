@@ -25,6 +25,9 @@ const todos: Todo[] = [];
 // Test data
 // ==========================================================================
 todos.push({ id: 1, title: "Buy groceries", completed: false });
+todos.push({ id: 2, title: "Buy groceries", completed: false });
+todos.push({ id: 3, title: "Buy groceries", completed: false });
+todos.push({ id: 4, title: "Buy groceries", completed: false });
 
 // ==========================================================================
 // Function
@@ -154,8 +157,10 @@ app.delete("/todos/{:id}", (req: Request, res: Response) => {
     return;
   }
 
-  // TODO
-  // res.status(200).json({ message: "A todo removed" });
+  const index = todos.findIndex((todo) => todo.id === id)!;
+  todos.splice(index, 1);
+
+  res.status(200).json({ message: "A todo removed", todos });
 });
 
 // Invalid URL
