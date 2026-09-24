@@ -23,15 +23,16 @@ type Todo = {
 
 const PORT = 3000;
 const todos: Todo[] = [];
+let latestId = 0;
 
 // ==========================================================================
 // Test data
 // ==========================================================================
 
-todos.push({ id: 1, title: "Buy groceries", completed: false });
-todos.push({ id: 2, title: "Buy groceries", completed: false });
-todos.push({ id: 3, title: "Buy groceries", completed: false });
-todos.push({ id: 4, title: "Buy groceries", completed: false });
+todos.push({ id: ++latestId, title: "Buy groceries", completed: false });
+todos.push({ id: ++latestId, title: "Buy groceries", completed: false });
+todos.push({ id: ++latestId, title: "Buy groceries", completed: false });
+todos.push({ id: ++latestId, title: "Buy groceries", completed: false });
 
 // ==========================================================================
 // Utility functions
@@ -94,31 +95,13 @@ app.get("/todos/{:id}", (req: Request, res: Response) => {
 app.post("/todos", (req: Request, res: Response) => {
   const body = req.body;
 
-  const missingFields: String[] = [];
-
-  if (!("id" in body)) {
-    missingFields.push("id");
-  }
   if (!("title" in body)) {
-    missingFields.push("title");
-  }
-  if (!("completed" in body)) {
-    missingFields.push("completed");
+    res.status(400).json({
+      error: "Required field is missing: title",
+    });
   }
 
-  if (missingFields.length > 1) {
-    res.status(400).json({
-      error: `Required fields are missing: ${missingFields.slice(0, missingFields.length - 1).join(", ")} and ${missingFields[missingFields.length - 1]}`,
-    });
-    return;
-  } else if (missingFields.length > 0) {
-    res.status(400).json({
-      error: `Required field is missing: ${missingFields[0]}`,
-    });
-    return;
-  }
-
-  todos.push({ id: body.id, title: body.title, completed: body.completed });
+  todos.push({ id: ++latestId, title: body.title, completed: false });
 
   res.status(201).json({ message: "A todo created", todos });
 });
