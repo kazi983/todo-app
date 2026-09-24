@@ -1,6 +1,5 @@
 import express, { type Express, type Request, type Response } from "express";
 import type { NextFunction } from "express-serve-static-core";
-import { todo } from "node:test";
 
 // ==========================================================================
 // Middleware
@@ -32,8 +31,10 @@ todos.push({ id: 1, title: "Buy groceries", completed: false });
 // ==========================================================================
 
 /**
- * Logs the HTTP request method and URL
- * @param {Request} req - The incoming HTTP request.
+ * Logs the HTTP request method and URL before passing control to the next middleware.
+ * @param {Request} req - The HTTP request.
+ * @param {Response} res - The HTTP response.
+ * @param {NextFunction} next - The function that passes control to the next middleware.
  */
 function reqLogger(req: Request, res: Response, next: NextFunction) {
   console.log(`${req.method}: ${req.url}`);
@@ -41,10 +42,12 @@ function reqLogger(req: Request, res: Response, next: NextFunction) {
 }
 
 /**
- *
+ * Sends a 404 response for an invalid URL.
+ * @param {Request} req - The HTTP request.
+ * @param {Response} res - The HTTP response.
  */
-function send404page(req: Request, res: Response) {
-  res.status(404).json({ error: "Invalid URL" });
+function send404(req: Request, res: Response) {
+  res.status(404).json({ error: "Invalid URL", url: req.url });
 }
 
 // ==========================================================================
@@ -69,7 +72,7 @@ app.get("/todos/{:id}", (req: Request, res: Response) => {
   const id = req.params.id;
 
   if (!todos.some((todo) => todo.id === Number(id))) {
-    send404page(req, res);
+    send404(req, res);
     return;
   }
 
@@ -80,8 +83,33 @@ app.get("/todos/{:id}", (req: Request, res: Response) => {
 
 // POST /todos
 app.post("/todos", (req: Request, res: Response) => {
-  // TODO
-  // res.status(200).json({ message: "A todo created" });
+  const body = req.body;
+
+  const missingFields: String[] = [];
+
+  if (!("id" in body)) {
+    missingFields.push("id");
+  }
+  if (!("title" in body)) {
+    missingFields.push("title");
+  }
+  if (!("completed" in body)) {
+    missingFields.push("completed");
+  }
+
+  if (missingFields.length > 1) {
+    res.status(400).json({
+      error: `Required fields are missing: ${missingFields.slice(0, missingFields.length - 1).join(", ")} and ${missingFields[missingFields.length - 1]}`,
+    });
+  } else if (missingFields.length > 0) {
+    res.status(400).json({
+      error: `Required field is missing: ${missingFields[0]}`,
+    });
+  }
+
+  todos.push({ id: body.id, title: body.title, completed: body.completed });
+
+  res.status(200).json({ message: "A todo created", todos });
 });
 
 // PUT /todos/:id
@@ -89,7 +117,7 @@ app.put("/todos/{:id}", (req: Request, res: Response) => {
   const id = req.params.id;
 
   if (!todos.some((todo) => todo.id === Number(id))) {
-    send404page(req, res);
+    send404(req, res);
     return;
   }
 
@@ -102,7 +130,7 @@ app.delete("/todos/{:id}", (req: Request, res: Response) => {
   const id = req.params.id;
 
   if (!todos.some((todo) => todo.id === Number(id))) {
-    send404page(req, res);
+    send404(req, res);
     return;
   }
 
