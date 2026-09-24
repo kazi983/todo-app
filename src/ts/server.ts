@@ -66,7 +66,7 @@ app.use(express.json());
 app.use(reqLogger);
 
 // GET /todos
-app.get("/todos", (req: Request, res: Response) => {
+app.get("/todos", (res: Response) => {
   res.status(200).json(todos);
 });
 
@@ -164,7 +164,7 @@ app.delete("/todos/{:id}", (req: Request, res: Response) => {
 });
 
 // Invalid URL
-app.use((req: Request, res: Response) => {
+app.use((res: Response) => {
   res.status(404).json({ error: "Invalid URL" });
 });
 
