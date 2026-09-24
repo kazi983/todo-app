@@ -20,8 +20,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "tsx --watch src/ts/server.ts",
-    "prepare": "husky"
+    "dev": "tsx --watch src/ts/app.ts",
+    "prepare": "husky",
+    "test": "bun test"
   },
   "lint-staged": {
     "*.ts": [
