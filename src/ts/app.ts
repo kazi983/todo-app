@@ -94,12 +94,13 @@ export function createApp() {
 
     let completed = false;
 
-    if (!("title" in body)) {
+    if (!body || !("title" in body)) {
       res.status(400).json({
         error: "Required field is missing: title",
       });
       return;
     }
+
     if ("completed" in body) {
       completed = body.completed;
     }
