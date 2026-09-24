@@ -122,22 +122,26 @@ export function createApp() {
 
     const body = req.body;
 
-    if (Object.keys(body).length === 0) {
+    const missingFields = [];
+
+    if (!("title" in body)) {
+      missingFields.push("title");
+    }
+    if (!("completed" in body)) {
+      missingFields.push("completed");
+    }
+
+    if (missingFields.length > 0) {
       res.status(400).json({
-        error: "At least one field must be provided in the request body",
+        error: "Required field is missing: title",
       });
       return;
     }
 
     const todo = todos.find((todo) => todo.id === id)!;
 
-    if ("title" in body) {
-      todo.title = body.title;
-    }
-
-    if ("completed" in body) {
-      todo.completed = body.completed;
-    }
+    todo.title = body.title;
+    todo.completed = body.completed;
 
     res.status(200).json(todo);
   });
