@@ -72,7 +72,7 @@ app.use(reqLogger);
 // ==========================================================================
 
 // GET /todos
-app.get("/todos", (res: Response) => {
+app.get("/todos", (_req: Request, res: Response) => {
   res.status(200).json(todos);
 });
 
@@ -170,7 +170,7 @@ app.delete("/todos/{:id}", (req: Request, res: Response) => {
 });
 
 // Handle requests to undefined routes.
-app.use((res: Response) => {
+app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: "Invalid URL" });
 });
 
