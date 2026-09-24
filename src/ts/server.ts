@@ -101,10 +101,12 @@ app.post("/todos", (req: Request, res: Response) => {
     res.status(400).json({
       error: `Required fields are missing: ${missingFields.slice(0, missingFields.length - 1).join(", ")} and ${missingFields[missingFields.length - 1]}`,
     });
+    return;
   } else if (missingFields.length > 0) {
     res.status(400).json({
       error: `Required field is missing: ${missingFields[0]}`,
     });
+    return;
   }
 
   todos.push({ id: body.id, title: body.title, completed: body.completed });
