@@ -101,6 +101,7 @@ app.post("/todos", (req: Request, res: Response) => {
     res.status(400).json({
       error: "Required field is missing: title",
     });
+    return;
   }
   if ("completed" in body) {
     completed = body.completed;
