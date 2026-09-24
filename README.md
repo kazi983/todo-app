@@ -52,14 +52,3 @@ This project focuses on building your first Express server with CRUD endpoints t
 ---
 
 **Note:** Ensure thorough error handling and appropriate status codes are incorporated into your server for enhanced robustness. Test each endpoint using a tool like Postman, Thunder Client, or `curl`.
-
-# rate limiters
-
-detect bots
-
-frontend
- - add invisible bot-test input field -> bots can detect
- - only users have cookies -> bots can detect
- - mousemovement
-
-recapture
