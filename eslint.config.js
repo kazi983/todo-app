@@ -15,6 +15,9 @@ export default [
       "jsdoc/check-param-names": "error",
       "jsdoc/require-param-type": "error",
       "jsdoc/require-returns-type": "error",
+      "jsdoc/require-description": "error",
+      "jsdoc/require-param": "error",
+      "jsdoc/require-param-description": "error",
     },
   },
 ];
