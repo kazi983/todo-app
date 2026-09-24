@@ -94,7 +94,7 @@ export function createApp() {
 
     let completed = false;
 
-    if (!body || !("title" in body)) {
+    if (!body || !("title" in body) || body.title.trim() === "") {
       res.status(400).json({
         error: "Required field is missing: title",
       });
