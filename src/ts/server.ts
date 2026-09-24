@@ -42,12 +42,12 @@ function reqLogger(req: Request, res: Response, next: NextFunction) {
 }
 
 /**
- * Sends a 404 response for an invalid URL.
- * @param {Request} req - The HTTP request.
+ * Sends a 404 response with an optional error message.
  * @param {Response} res - The HTTP response.
+ * @param {string} message - An optional error message.
  */
-function send404(req: Request, res: Response) {
-  res.status(404).json({ error: "Invalid URL", url: req.url });
+function send404(res: Response, message: String = "") {
+  res.status(404).json({ error: "Invalid URL", message });
 }
 
 // ==========================================================================
@@ -69,10 +69,10 @@ app.get("/todos", (req: Request, res: Response) => {
 
 // GET /todos/:id
 app.get("/todos/{:id}", (req: Request, res: Response) => {
-  const id = req.params.id;
+  const id = Number(req.params.id);
 
-  if (!todos.some((todo) => todo.id === Number(id))) {
-    send404(req, res);
+  if (!todos.some((todo) => todo.id === id)) {
+    send404(res, `ID "${id}" does not exist`);
     return;
   }
 
@@ -114,10 +114,10 @@ app.post("/todos", (req: Request, res: Response) => {
 
 // PUT /todos/:id
 app.put("/todos/{:id}", (req: Request, res: Response) => {
-  const id = req.params.id;
+  const id: Number = Number(req.params.id);
 
-  if (!todos.some((todo) => todo.id === Number(id))) {
-    send404(req, res);
+  if (!todos.some((todo) => todo.id === id)) {
+    send404(res, `ID "${id}" does not exist`);
     return;
   }
 
@@ -127,10 +127,10 @@ app.put("/todos/{:id}", (req: Request, res: Response) => {
 
 // DELETE /todos/:id
 app.delete("/todos/{:id}", (req: Request, res: Response) => {
-  const id = req.params.id;
+  const id: Number = Number(req.params.id);
 
-  if (!todos.some((todo) => todo.id === Number(id))) {
-    send404(req, res);
+  if (!todos.some((todo) => todo.id === id)) {
+    send404(res, `ID "${id}" does not exist`);
     return;
   }
 
