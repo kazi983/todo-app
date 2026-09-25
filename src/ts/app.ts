@@ -121,7 +121,7 @@ export function createApp() {
 
   // PUT /todos/:id
   app.put("/todos/:id", (req: Request, res: Response) => {
-    const id: Number = Number(req.params.id);
+    const id = Number(req.params.id);
 
     if (!todos.some((todo) => todo.id === id)) {
       send404(res, `ID "${id}" does not exist`);
@@ -156,7 +156,7 @@ export function createApp() {
 
   // DELETE /todos/:id
   app.delete("/todos/:id", (req: Request, res: Response) => {
-    const id: Number = Number(req.params.id);
+    const id = Number(req.params.id);
 
     if (!todos.some((todo) => todo.id === id)) {
       send404(res, `ID "${id}" does not exist`);
