@@ -5,8 +5,6 @@ import express, {
   type NextFunction,
 } from "express";
 
-const PORT = 3000;
-
 /**
  * Creates and configures an Express application with routes for managing todos.
  * @returns {Express} The configured Express application.
@@ -179,7 +177,3 @@ export function createApp() {
 
   return app;
 }
-
-createApp().listen(PORT, () => {
-  console.log(`app running on port: ${PORT}`);
-});
