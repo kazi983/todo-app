@@ -1,5 +1,9 @@
-import express, { type Express, type Request, type Response } from "express";
-import type { NextFunction } from "express-serve-static-core";
+import express, {
+  type Express,
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
 
 const PORT = 3000;
 
