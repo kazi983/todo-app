@@ -92,12 +92,11 @@ export function createApp() {
 
   // POST /todos
   app.post("/todos", (req: Request, res: Response) => {
-    const body = req.body;
+    const body = req.body ?? {};
 
     let completed = false;
 
     if (
-      !body ||
       !("title" in body) ||
       typeof body.title !== "string" ||
       body.title.trim() === ""
@@ -130,7 +129,7 @@ export function createApp() {
       return;
     }
 
-    const body = req.body;
+    const body = req.body ?? {};
 
     const missingFields = [];
 
