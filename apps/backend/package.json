@@ -10,8 +10,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "node --watch src/ts/server.ts",
-    "start": "NODE_ENV=production node src/ts/server.ts",
+    "dev": "node --env-file-if-exists=.env --watch src/ts/server.ts",
+    "start": "NODE_ENV=production node --env-file-if-exists=.env src/ts/server.ts",
     "test": "vitest run"
   }
 }
