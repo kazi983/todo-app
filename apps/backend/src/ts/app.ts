@@ -5,15 +5,11 @@ import express, {
   type NextFunction,
 } from "express";
 
+import type { Todo } from "./types.ts";
+
 // ==========================================================================
 // Types
 // ==========================================================================
-
-export type Todo = {
-  id: number;
-  title: string;
-  completed: boolean;
-};
 
 /**
  * Creates and configures an Express application with routes for managing todos.

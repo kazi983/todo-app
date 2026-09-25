@@ -3,7 +3,8 @@ import type { Server } from "node:http";
 import { once } from "node:events";
 import type { AddressInfo } from "node:net";
 
-import { createApp, type Todo } from "./app.ts";
+import { createApp } from "./app.ts";
+import type { Todo } from "./types.ts";
 
 const MISSING_ID = 99999;
 
