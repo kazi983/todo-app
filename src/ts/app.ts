@@ -54,7 +54,7 @@ export function createApp() {
    * @param {string} message - An optional error message.
    */
   function send404(res: Response, message: string = "") {
-    res.status(404).json({ error: "Invalid URL", message });
+    res.status(404).json({ error: "Todo not found", message });
   }
 
   // ==========================================================================
