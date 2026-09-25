@@ -229,6 +229,28 @@ describe("PUT /todos/:id", () => {
     expect(res.status).toBe(400);
   });
 
+  test("returns 400 when title is not a string", async () => {
+    const created = await createTodo({ title: "Keep me" });
+
+    const res = await request("PUT", `/todos/${created.id}`, {
+      title: 123,
+      completed: false,
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  test("returns 400 when completed is not a boolean", async () => {
+    const created = await createTodo({ title: "Keep me" });
+
+    const res = await request("PUT", `/todos/${created.id}`, {
+      title: "x",
+      completed: "true",
+    });
+
+    expect(res.status).toBe(400);
+  });
+
   test("leaves the todo unchanged when validation fails", async () => {
     const created = await createTodo({ title: "Keep me" });
     await request("PUT", `/todos/${created.id}`, { completed: true });

@@ -131,24 +131,28 @@ export function createApp() {
 
     const body = req.body ?? {};
 
-    const missingFields = [];
+    const invalidFields = [];
 
-    if (!("title" in body)) {
-      missingFields.push("title");
+    if (
+      !("title" in body) ||
+      typeof body.title !== "string" ||
+      body.title.trim() === ""
+    ) {
+      invalidFields.push("title");
     }
-    if (!("completed" in body)) {
-      missingFields.push("completed");
+    if (!("completed" in body) || typeof body.completed !== "boolean") {
+      invalidFields.push("completed");
     }
 
-    if (missingFields.length > 0) {
+    if (invalidFields.length > 0) {
       res.status(400).json({
-        error: `Required field is missing: ${missingFields.join(", ")}.`,
+        error: `Required field is missing: ${invalidFields.join(", ")}.`,
       });
       return;
     }
 
     todo.title = body.title;
-    todo.completed = body.completed;
+    todo.completed = Boolean(body.completed);
 
     res.status(200).json(todo);
   });
