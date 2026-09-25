@@ -1,2 +1,9 @@
+import express from "express";
 import { createApp } from "./app.ts";
-createApp().listen(3000, () => console.log("app running on port: 3000"));
+
+const PORT = Number(process.env.PORT ?? 3000);
+const server = express();
+
+server.use("/api", createApp());
+
+server.listen(PORT, () => console.log(`app running on port: ${PORT}`));
