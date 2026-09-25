@@ -1,7 +1,19 @@
-import express, { type Express, type Request, type Response } from "express";
-import type { NextFunction } from "express-serve-static-core";
+import express, {
+  type Express,
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
 
-const PORT = 3000;
+// ==========================================================================
+// Types
+// ==========================================================================
+
+export type Todo = {
+  id: number;
+  title: string;
+  completed: boolean;
+};
 
 /**
  * Creates and configures an Express application with routes for managing todos.
@@ -13,16 +25,6 @@ export function createApp() {
   // ==========================================================================
 
   const app: Express = express();
-
-  // ==========================================================================
-  // Types
-  // ==========================================================================
-
-  type Todo = {
-    id: number;
-    title: string;
-    completed: boolean;
-  };
 
   // ==========================================================================
   // Constants
@@ -52,7 +54,7 @@ export function createApp() {
    * @param {string} message - An optional error message.
    */
   function send404(res: Response, message: string = "") {
-    res.status(404).json({ error: "Invalid URL", message });
+    res.status(404).json({ error: "Todo not found.", message });
   }
 
   // ==========================================================================
@@ -60,7 +62,7 @@ export function createApp() {
   // ==========================================================================
 
   // Register express.json() middleware to parse incoming JSON request bodies.
-  //  https://expressjs.com/en/resources/middleware/body-parser/ ??
+  // TODO https://expressjs.com/en/resources/middleware/body-parser/ ??
   app.use(express.json());
 
   app.use(reqLogger);
@@ -75,33 +77,28 @@ export function createApp() {
   });
 
   // GET /todos/:id
-  app.get("/todos/{:id}", (req: Request, res: Response) => {
+  app.get("/todos/:id", (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
-    if (!todos.some((todo) => todo.id === id)) {
-      send404(res, `ID "${id}" does not exist`);
+    const todo = todos.find((todo) => todo.id === id);
+
+    if (!todo) {
+      send404(res, `ID "${id}" does not exist.`);
       return;
     }
-
-    const todo = todos.find((todo) => todo.id === Number(id));
 
     res.status(200).json(todo);
   });
 
   // POST /todos
   app.post("/todos", (req: Request, res: Response) => {
-    const body = req.body;
+    const body = req.body ?? {};
 
     let completed = false;
 
-    if (
-      !body ||
-      !("title" in body) ||
-      typeof body.title !== "string" ||
-      body.title.trim() === ""
-    ) {
+    if (typeof body.title !== "string" || body.title.trim() === "") {
       res.status(400).json({
-        error: "Required field is missing: title",
+        error: "Missing field: title.",
       });
       return;
     }
@@ -118,50 +115,51 @@ export function createApp() {
   });
 
   // PUT /todos/:id
-  app.put("/todos/{:id}", (req: Request, res: Response) => {
-    const id: Number = Number(req.params.id);
+  app.put("/todos/:id", (req: Request, res: Response) => {
+    const id = Number(req.params.id);
 
-    if (!todos.some((todo) => todo.id === id)) {
-      send404(res, `ID "${id}" does not exist`);
+    const todo = todos.find((todo) => todo.id === id);
+
+    if (!todo) {
+      send404(res, `ID "${id}" does not exist.`);
       return;
     }
 
-    const body = req.body;
+    const body = req.body ?? {};
 
-    const missingFields = [];
+    const invalidFields = [];
 
-    if (!("title" in body)) {
-      missingFields.push("title");
+    if (typeof body.title !== "string" || body.title.trim() === "") {
+      invalidFields.push("title");
     }
-    if (!("completed" in body)) {
-      missingFields.push("completed");
+    if (typeof body.completed !== "boolean") {
+      invalidFields.push("completed");
     }
 
-    if (missingFields.length > 0) {
+    if (invalidFields.length > 0) {
       res.status(400).json({
-        error: "Required field is missing: title",
+        error: `Invalid or missing field(s): ${invalidFields.join(", ")}.`,
       });
       return;
     }
 
-    const todo = todos.find((todo) => todo.id === id)!;
-
     todo.title = body.title;
-    todo.completed = body.completed;
+    todo.completed = Boolean(body.completed);
 
     res.status(200).json(todo);
   });
 
   // DELETE /todos/:id
-  app.delete("/todos/{:id}", (req: Request, res: Response) => {
-    const id: Number = Number(req.params.id);
+  app.delete("/todos/:id", (req: Request, res: Response) => {
+    const id = Number(req.params.id);
 
-    if (!todos.some((todo) => todo.id === id)) {
-      send404(res, `ID "${id}" does not exist`);
+    const index = todos.findIndex((todo) => todo.id === id);
+
+    if (index === -1) {
+      send404(res, `ID "${id}" does not exist.`);
       return;
     }
 
-    const index = todos.findIndex((todo) => todo.id === id)!;
     todos.splice(index, 1);
 
     // Automatically set to the default HTTP status message
@@ -170,12 +168,8 @@ export function createApp() {
 
   // Handle requests to undefined routes.
   app.use((_req: Request, res: Response) => {
-    res.status(404).json({ error: "Invalid URL" });
+    res.status(404).json({ error: "Invalid URL." });
   });
 
   return app;
 }
-
-createApp().listen(PORT, () => {
-  console.log(`app running on port: ${PORT}`);
-});

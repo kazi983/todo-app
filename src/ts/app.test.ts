@@ -3,9 +3,7 @@ import type { Server } from "node:http";
 import { once } from "node:events";
 import type { AddressInfo } from "node:net";
 
-import { createApp } from "./app.ts";
-
-type Todo = { id: number; title: string; completed: boolean };
+import { createApp, type Todo } from "./app.ts";
 
 const MISSING_ID = 99999;
 
@@ -226,6 +224,28 @@ describe("PUT /todos/:id", () => {
 
     const res = await request("PUT", `/todos/${created.id}`, {
       title: "New title",
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  test("returns 400 when title is not a string", async () => {
+    const created = await createTodo({ title: "Keep me" });
+
+    const res = await request("PUT", `/todos/${created.id}`, {
+      title: 123,
+      completed: false,
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  test("returns 400 when completed is not a boolean", async () => {
+    const created = await createTodo({ title: "Keep me" });
+
+    const res = await request("PUT", `/todos/${created.id}`, {
+      title: "x",
+      completed: "true",
     });
 
     expect(res.status).toBe(400);
