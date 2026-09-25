@@ -3,7 +3,7 @@ import type { Server } from "node:http";
 import { once } from "node:events";
 import type { AddressInfo } from "node:net";
 
-import { createApp } from "./app.ts";
+import { createApp } from "./app";
 
 type Todo = { id: number; title: string; completed: boolean };
 

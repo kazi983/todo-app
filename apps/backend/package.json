@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6"
+  },
+  "name": "@todo/backend",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch src/ts/app.ts"
+  }
+}

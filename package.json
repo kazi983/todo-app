@@ -1,10 +1,9 @@
 {
-  "dependencies": {
-    "express": "^5.2.1"
-  },
+  "workspaces": [
+    "apps/*"
+  ],
   "devDependencies": {
     "@types/bun": "^1.4.2",
-    "@types/express": "^5.0.6",
     "@types/node": "^26.6.2",
     "@typescript/native": "npm:typescript@^7.0.2",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
@@ -15,17 +14,16 @@
     "prettier": "3.9.9",
     "typescript-eslint": "^8.70.1"
   },
-  "name": "todo-server",
-  "module": "src/ts/server.ts",
+  "name": "todo-list",
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "tsx --watch src/ts/app.ts",
+    "dev": "bun run --filter '*' dev",
     "prepare": "husky",
     "test": "bun test"
   },
   "lint-staged": {
-    "*.ts": [
+    "*.{ts,tsx}": [
       "eslint",
       "prettier --write"
     ]
