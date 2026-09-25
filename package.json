@@ -3,24 +3,27 @@
     "apps/*"
   ],
   "devDependencies": {
-    "@types/bun": "^1.4.2",
     "@types/node": "^26.6.2",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "concurrently": "^10.0.5",
     "eslint": "^10.11.0",
     "eslint-plugin-jsdoc": "^64.5.4",
     "husky": "^9.1.7",
     "lint-staged": "^17.5.1",
     "prettier": "3.9.9",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.70.1"
   },
   "name": "todo-list",
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun run --filter '*' dev",
-    "prepare": "husky",
-    "test": "bun test"
+    "dev": "concurrently -n backend,frontend \"npm run dev -w @todo/backend\" \"npm run dev -w @todo/frontend\"",
+    "build": "npm run build -w @todo/frontend",
+    "start": "npm run start -w @todo/backend",
+    "test": "npm run test --workspaces",
+    "typecheck": "tsc --noEmit -p apps/backend && tsc --noEmit -p apps/frontend",
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

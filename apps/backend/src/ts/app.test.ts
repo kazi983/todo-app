@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, describe, expect, test } from "bun:test";
+import { beforeAll, afterAll, describe, expect, test } from "vitest";
 import type { Server } from "node:http";
 import { once } from "node:events";
 import type { AddressInfo } from "node:net";
