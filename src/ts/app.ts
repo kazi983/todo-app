@@ -5,6 +5,16 @@ import express, {
   type NextFunction,
 } from "express";
 
+// ==========================================================================
+// Types
+// ==========================================================================
+
+export type Todo = {
+  id: number;
+  title: string;
+  completed: boolean;
+};
+
 /**
  * Creates and configures an Express application with routes for managing todos.
  * @returns {Express} The configured Express application.
@@ -15,16 +25,6 @@ export function createApp() {
   // ==========================================================================
 
   const app: Express = express();
-
-  // ==========================================================================
-  // Types
-  // ==========================================================================
-
-  type Todo = {
-    id: number;
-    title: string;
-    completed: boolean;
-  };
 
   // ==========================================================================
   // Constants
