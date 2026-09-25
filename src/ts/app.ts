@@ -62,7 +62,7 @@ export function createApp() {
   // ==========================================================================
 
   // Register express.json() middleware to parse incoming JSON request bodies.
-  //  https://expressjs.com/en/resources/middleware/body-parser/ ??
+  // TODO https://expressjs.com/en/resources/middleware/body-parser/ ??
   app.use(express.json());
 
   app.use(reqLogger);
@@ -80,7 +80,7 @@ export function createApp() {
   app.get("/todos/:id", (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
-    const todo = todos.find((todo) => todo.id === Number(id));
+    const todo = todos.find((todo) => todo.id === id);
 
     if (!todo) {
       send404(res, `ID "${id}" does not exist.`);
@@ -96,13 +96,9 @@ export function createApp() {
 
     let completed = false;
 
-    if (
-      !("title" in body) ||
-      typeof body.title !== "string" ||
-      body.title.trim() === ""
-    ) {
+    if (typeof body.title !== "string" || body.title.trim() === "") {
       res.status(400).json({
-        error: "Required field is missing: title.",
+        error: "Missing field: title.",
       });
       return;
     }
@@ -133,20 +129,16 @@ export function createApp() {
 
     const invalidFields = [];
 
-    if (
-      !("title" in body) ||
-      typeof body.title !== "string" ||
-      body.title.trim() === ""
-    ) {
+    if (typeof body.title !== "string" || body.title.trim() === "") {
       invalidFields.push("title");
     }
-    if (!("completed" in body) || typeof body.completed !== "boolean") {
+    if (typeof body.completed !== "boolean") {
       invalidFields.push("completed");
     }
 
     if (invalidFields.length > 0) {
       res.status(400).json({
-        error: `Required field is missing: ${invalidFields.join(", ")}.`,
+        error: `Invalid or missing field(s): ${invalidFields.join(", ")}.`,
       });
       return;
     }
@@ -161,12 +153,13 @@ export function createApp() {
   app.delete("/todos/:id", (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
-    if (!todos.some((todo) => todo.id === id)) {
+    const index = todos.findIndex((todo) => todo.id === id);
+
+    if (index === -1) {
       send404(res, `ID "${id}" does not exist.`);
       return;
     }
 
-    const index = todos.findIndex((todo) => todo.id === id)!;
     todos.splice(index, 1);
 
     // Automatically set to the default HTTP status message
