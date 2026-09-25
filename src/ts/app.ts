@@ -77,7 +77,7 @@ export function createApp() {
   });
 
   // GET /todos/:id
-  app.get("/todos/{:id}", (req: Request, res: Response) => {
+  app.get("/todos/:id", (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
     if (!todos.some((todo) => todo.id === id)) {
@@ -120,7 +120,7 @@ export function createApp() {
   });
 
   // PUT /todos/:id
-  app.put("/todos/{:id}", (req: Request, res: Response) => {
+  app.put("/todos/:id", (req: Request, res: Response) => {
     const id: Number = Number(req.params.id);
 
     if (!todos.some((todo) => todo.id === id)) {
@@ -155,7 +155,7 @@ export function createApp() {
   });
 
   // DELETE /todos/:id
-  app.delete("/todos/{:id}", (req: Request, res: Response) => {
+  app.delete("/todos/:id", (req: Request, res: Response) => {
     const id: Number = Number(req.params.id);
 
     if (!todos.some((todo) => todo.id === id)) {
