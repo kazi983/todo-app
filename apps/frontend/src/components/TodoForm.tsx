@@ -1,10 +1,17 @@
+import type { Todo } from "@/types";
 import { useState } from "react";
+
+type TodoFormProps = {
+  onAdd: (todo: Todo) => void;
+};
 
 /**
  * Renders a form for creating a new todo.
+ * @param {TodoFormProps} props - The component props.
+ * @param {(todo: Todo) => void} props.onAdd - Callback function to add a new todo to the list.
  * @returns {JSX.Element} The todo creation form.
  */
-export default function TodoForm() {
+export default function TodoForm({ onAdd }: TodoFormProps) {
   const [value, setValue] = useState<string>("");
 
   /**
@@ -25,8 +32,7 @@ export default function TodoForm() {
     })
       .then((res) => res.json())
       .then((data) => {
-        // setCompleted(data.completed);
-        // todo.completed = completed;
+        onAdd(data);
       })
       .catch((err) => {
         // TODO: error message

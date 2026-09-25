@@ -7,7 +7,8 @@ type TodoProps = {
 
 /**
  * Renders a todo item.
- * @param {TodoProps} todo - The todo to render.
+ * @param {TodoProps} props - The component props.
+ * @param {Todo} props.todo - The todo to render.
  * @returns {JSX.Element} The todo item.
  */
 export default function TodoItem({ todo }: TodoProps) {

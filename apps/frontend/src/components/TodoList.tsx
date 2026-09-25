@@ -1,28 +1,18 @@
-import { useState, useEffect } from "react";
 import TodoItem from "./TodoItem";
 import type { Todo } from "@/types";
 
+type TodoListProps = {
+  todos: Todo[];
+  loading: boolean;
+};
 /**
  * Renders a list of todos fetched from the API.
+ * @param {TodoListProps} props - The component props.
+ * @param {Todo[]} props.todos - The list of todos to render.
+ * @param {boolean} props.loading - Indicates whether the todos are still being fetched.
  * @returns {JSX.Element} The todo list or a loading message.
  */
-export default function TodoList() {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    fetch("/api/todos", { method: "GET" })
-      .then((res) => res.json())
-      .then((data) => {
-        setTodos(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        // TODO: error message
-        setLoading(false);
-      });
-  }, []);
-
+export default function TodoList({ todos, loading }: TodoListProps) {
   if (loading) {
     return <p>Loading...</p>;
   }
