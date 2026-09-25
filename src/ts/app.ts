@@ -80,12 +80,12 @@ export function createApp() {
   app.get("/todos/:id", (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
-    if (!todos.some((todo) => todo.id === id)) {
+    const todo = todos.find((todo) => todo.id === Number(id));
+
+    if (!todo) {
       send404(res, `ID "${id}" does not exist`);
       return;
     }
-
-    const todo = todos.find((todo) => todo.id === Number(id));
 
     res.status(200).json(todo);
   });
@@ -123,7 +123,9 @@ export function createApp() {
   app.put("/todos/:id", (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
-    if (!todos.some((todo) => todo.id === id)) {
+    const todo = todos.find((todo) => todo.id === id);
+
+    if (!todo) {
       send404(res, `ID "${id}" does not exist`);
       return;
     }
@@ -145,8 +147,6 @@ export function createApp() {
       });
       return;
     }
-
-    const todo = todos.find((todo) => todo.id === id)!;
 
     todo.title = body.title;
     todo.completed = body.completed;
