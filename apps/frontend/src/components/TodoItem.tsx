@@ -33,7 +33,6 @@ export default function TodoItem({ todo }: TodoProps) {
       })
       .then((data) => {
         setCompleted(data.completed);
-        todo.completed = completed;
       })
       .catch((err) => {
         toast.error(`API error: \n${err.message}`);
