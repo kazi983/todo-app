@@ -262,6 +262,66 @@ describe("PUT /todos/:id", () => {
   });
 });
 
+describe("PUT /todos/order", () => {
+  /**
+   * Fetches the ids of all todos in their current order.
+   * @returns {Promise<number[]>} The todo ids in server order.
+   */
+  async function getIds(): Promise<number[]> {
+    const todos = (await (await request("GET", "/todos")).json()) as Todo[];
+    return todos.map((todo) => todo.id);
+  }
+
+  test("returns 200 and persists the new order", async () => {
+    await createTodo({ title: "Reorder me" });
+    const reversed = (await getIds()).reverse();
+
+    const res = await request("PUT", "/todos/order", { ids: reversed });
+
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as Todo[]).map((todo) => todo.id)).toEqual(
+      reversed,
+    );
+    expect(await getIds()).toEqual(reversed);
+  });
+
+  test("returns 400 when ids is missing", async () => {
+    const res = await request("PUT", "/todos/order", {});
+
+    expect(res.status).toBe(400);
+  });
+
+  test("returns 400 when an id is missing from the list", async () => {
+    const ids = await getIds();
+
+    const res = await request("PUT", "/todos/order", { ids: ids.slice(1) });
+
+    expect(res.status).toBe(400);
+  });
+
+  test("returns 400 when ids contain duplicates or unknown ids", async () => {
+    // Replace the first id so the length still matches the number of todos.
+    const rest = (await getIds()).slice(1);
+
+    const duplicate = await request("PUT", "/todos/order", {
+      ids: [...rest, rest[0]],
+    });
+    const unknown = await request("PUT", "/todos/order", {
+      ids: [...rest, MISSING_ID],
+    });
+
+    expect(duplicate.status).toBe(400);
+    expect(unknown.status).toBe(400);
+  });
+
+  test("leaves the order unchanged when validation fails", async () => {
+    const before = await getIds();
+    await request("PUT", "/todos/order", { ids: [MISSING_ID] });
+
+    expect(await getIds()).toEqual(before);
+  });
+});
+
 describe("DELETE /todos/:id", () => {
   test("returns a success status", async () => {
     const created = await createTodo({ title: "Delete me" });

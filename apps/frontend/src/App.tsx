@@ -37,10 +37,35 @@ export function App() {
     setTodos((prev) => [...prev, todo]);
   }
 
+  /**
+   * Shows the new order immediately and saves it to the API.
+   * Rolls back to the previous order if saving fails.
+   * @param {Todo[]} reordered - The todos in their new order.
+   */
+  function reorderTodos(reordered: Todo[]) {
+    // Make a backup for a roll back
+    const previous = todos;
+
+    setTodos(reordered);
+
+    fetch("/api/todos/order", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: reordered.map((todo) => todo.id) }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to save order: ${res.status}`);
+      })
+      .catch(() => {
+        // TODO: error message
+        setTodos(previous);
+      });
+  }
+
   return (
     <div className="mx-auto mt-4 px-5 max-w-150">
       <TodoForm onAdd={addTodo} />
-      <TodoList todos={todos} loading={loading} onReorder={setTodos} />
+      <TodoList todos={todos} loading={loading} onReorder={reorderTodos} />
     </div>
   );
 }

@@ -58,7 +58,7 @@ export function createApp() {
   // ==========================================================================
 
   // Register express.json() middleware to parse incoming JSON request bodies.
-  // TODO https://expressjs.com/en/resources/middleware/body-parser/ ??
+  // QUESTION: https://expressjs.com/en/resources/middleware/body-parser/
   app.use(express.json());
 
   app.use(reqLogger);
@@ -108,6 +108,28 @@ export function createApp() {
     todos.push(newTodo);
 
     res.status(201).json(newTodo);
+  });
+
+  // PUT /todos/order
+  app.put("/todos/order", (req: Request, res: Response) => {
+    const orderedIds = (req.body ?? {}).ids;
+
+    const isValid =
+      Array.isArray(orderedIds) &&
+      orderedIds.length === todos.length &&
+      new Set(orderedIds).size === orderedIds.length &&
+      orderedIds.every((id) => todos.some((todo) => todo.id === id));
+
+    if (!isValid) {
+      res.status(400).json({
+        error: "Invalid field: ids must contain every todo id exactly once.",
+      });
+      return;
+    }
+
+    todos.sort((a, b) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
+
+    res.status(200).json(todos);
   });
 
   // PUT /todos/:id
