@@ -13,7 +13,8 @@ export function App() {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fetch("/api/todos", { method: "GET" })
+    const controller = new AbortController();
+    fetch("/api/todos", { method: "GET", signal: controller.signal })
       .then((res) => res.json())
       .then((data) => {
         setTodos(data);
@@ -21,8 +22,11 @@ export function App() {
       })
       .catch((err) => {
         // TODO: error message
+        if (err.name === "AbortError") return; // Ignore requests cancelled by cleanup
         setLoading(false);
       });
+    // QUESTION: prevent "pseudo-mounting"?
+    return () => controller.abort(); // Cancel the in-flight request on unmount
   }, []);
 
   /**
