@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import "./index.css";
 import TodoList from "./components/TodoList";
 import TodoForm from "./components/TodoForm";
@@ -24,9 +25,9 @@ export function App() {
         setLoading(false);
       })
       .catch((err) => {
-        // TODO: error message
         if (err.name === "AbortError") return; // Ignore requests cancelled by cleanup
         setLoading(false);
+        toast.error(`API error: ${err.message}`);
       });
     // QUESTION: prevent "pseudo-mounting"?
     return () => controller.abort(); // Cancel the in-flight request on unmount
@@ -59,14 +60,15 @@ export function App() {
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to save order: ${res.status}`);
       })
-      .catch(() => {
-        // TODO: error message
+      .catch((err) => {
         setTodos(previous);
+        toast.error(`API error: ${err.message}`);
       });
   }
 
   return (
     <div className="mx-auto mt-4 px-5 max-w-150">
+      <Toaster />
       <TodoForm onAdd={addTodo} />
       <TodoList todos={todos} loading={loading} onReorder={reorderTodos} />
     </div>

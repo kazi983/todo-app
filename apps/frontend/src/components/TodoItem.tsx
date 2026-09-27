@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import type { Todo } from "@/types";
 
 type TodoProps = {
@@ -26,7 +27,8 @@ export default function TodoItem({ todo }: TodoProps) {
       body: JSON.stringify(body),
     })
       .then((res) => {
-        if (!res.ok) throw new Error(`Failed to save status: ${res.status}`);
+        if (!res.ok)
+          throw new Error(`Failed to toggle complete status: ${res.status}`);
         return res.json();
       })
       .then((data) => {
@@ -34,7 +36,7 @@ export default function TodoItem({ todo }: TodoProps) {
         todo.completed = completed;
       })
       .catch((err) => {
-        // TODO: error message
+        toast.error(`API error: \n${err.message}`);
       });
   }
 

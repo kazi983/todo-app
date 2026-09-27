@@ -1,5 +1,6 @@
-import type { Todo } from "@/types";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import type { Todo } from "@/types";
 
 type TodoFormProps = {
   onAdd: (todo: Todo) => void;
@@ -38,7 +39,7 @@ export default function TodoForm({ onAdd }: TodoFormProps) {
         onAdd(data);
       })
       .catch((err) => {
-        // TODO: error message
+        toast.error(`API error: ${err.message}`);
       });
 
     setValue("");
