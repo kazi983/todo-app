@@ -34,9 +34,9 @@ export function App() {
   }
 
   return (
-    <div className="mx-auto mt-4 max-w-150">
+    <div className="mx-auto mt-4 px-5 max-w-150">
       <TodoForm onAdd={addTodo} />
-      <TodoList todos={todos} loading={loading} />
+      <TodoList todos={todos} loading={loading} onReorder={setTodos} />
     </div>
   );
 }
