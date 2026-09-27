@@ -25,7 +25,10 @@ export default function TodoItem({ todo }: TodoProps) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to save status: ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         setCompleted(data.completed);
         todo.completed = completed;

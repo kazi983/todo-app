@@ -15,7 +15,10 @@ export function App() {
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/todos", { method: "GET", signal: controller.signal })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to fetch todos: ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         setTodos(data);
         setLoading(false);
