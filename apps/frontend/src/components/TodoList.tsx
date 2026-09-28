@@ -18,6 +18,10 @@ const MOUSE_DRAG_DISTANCE = 5;
 const LONG_PRESS_DELAY = 300;
 // Touch and pen: how far (px) the finger may drift during the long-press
 const LONG_PRESS_TOLERANCE = 10;
+// While dragging: the page scrolls when the pointer is this close (px) to the top or bottom of the window
+const AUTO_SCROLL_EDGE = 80;
+// While dragging: the fastest auto-scroll speed (px per frame), reached at the very edge
+const AUTO_SCROLL_MAX_SPEED = 16;
 
 // A press on a row that may still turn into a drag
 type PendingPress = { index: number; x: number; y: number; timer?: number };
@@ -43,6 +47,7 @@ export default function TodoList({
   // Refs because they do not change what is drawn
   const pendingPress = useRef<PendingPress | null>(null);
   const justDragged = useRef(false);
+  const lastPointer = useRef({ x: 0, y: 0 });
 
   // While dragging, stop the page from scrolling under the finger.
   // React's onTouchMove is passive, so preventDefault() only works on a native listener.
@@ -58,6 +63,37 @@ export default function TodoList({
 
     // Prepare the function run the next time
     return () => document.removeEventListener("touchmove", preventScroll);
+  }, [dragFrom]);
+
+  // While dragging, scroll the page when the pointer is near the top or bottom of the window.
+  // A frame loop is needed because a pointer held still at the edge fires no pointermove.
+  useEffect(() => {
+    if (dragFrom === null) return;
+
+    let frame = 0;
+    const step = () => {
+      const { x, y } = lastPointer.current;
+      const bottomEdge = window.innerHeight - AUTO_SCROLL_EDGE;
+
+      // Negative scrolls up, positive scrolls down; faster the closer to the edge
+      let speed = 0;
+      if (y < AUTO_SCROLL_EDGE) {
+        speed =
+          -((AUTO_SCROLL_EDGE - y) / AUTO_SCROLL_EDGE) * AUTO_SCROLL_MAX_SPEED;
+      } else if (y > bottomEdge) {
+        speed = ((y - bottomEdge) / AUTO_SCROLL_EDGE) * AUTO_SCROLL_MAX_SPEED;
+      }
+
+      if (speed !== 0) {
+        window.scrollBy(0, speed);
+        // The rows moved under the pointer, so check again which row it is over
+        updateDragOver(x, y);
+      }
+      frame = requestAnimationFrame(step);
+    };
+
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
   }, [dragFrom]);
 
   if (loading) {
@@ -149,6 +185,18 @@ export default function TodoList({
   }
 
   /**
+   * Stores the index of the row under the given point as the drop target.
+   * @param {number} x - The horizontal position in the window (clientX).
+   * @param {number} y - The vertical position in the window (clientY).
+   */
+  function updateDragOver(x: number, y: number) {
+    const row = document
+      .elementFromPoint(x, y)
+      ?.closest<HTMLElement>("[data-index]");
+    if (row) setDragOver(Number(row.dataset.index));
+  }
+
+  /**
    * Handles a press on a row: the handle starts a drag at once, the rest of the row
    * waits for a mouse move (mouse) or a long-press (touch and pen).
    * @param {React.PointerEvent<HTMLLIElement>} e - The pointer down event.
@@ -163,6 +211,7 @@ export default function TodoList({
 
     const row = e.currentTarget;
     const { pointerId } = e;
+    lastPointer.current = { x: e.clientX, y: e.clientY };
 
     if ((e.target as HTMLElement).closest("[data-drag-handle]")) {
       startDrag(row, pointerId, index);
@@ -185,6 +234,7 @@ export default function TodoList({
    */
   function handlePointerMove(e: React.PointerEvent<HTMLLIElement>) {
     const press = pendingPress.current;
+    lastPointer.current = { x: e.clientX, y: e.clientY };
 
     if (dragFrom === null) {
       if (!press) return;
@@ -200,10 +250,7 @@ export default function TodoList({
     }
 
     // Pointer capture sends every move to the dragged row, so look up the row under the pointer
-    const row = document
-      .elementFromPoint(e.clientX, e.clientY)
-      ?.closest<HTMLElement>("[data-index]");
-    if (row) setDragOver(Number(row.dataset.index));
+    updateDragOver(e.clientX, e.clientY);
   }
 
   /**
