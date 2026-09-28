@@ -85,7 +85,7 @@ export function App() {
   const done = todos.filter((todo) => todo.completed).length;
 
   return (
-    <main className="mx-auto flex max-w-160 flex-col gap-6 px-5 pt-14 pb-16 sm:gap-8 sm:pt-22">
+    <main className="flex flex-col gap-6 sm:gap-8 mx-auto px-5 pt-14 sm:pt-22 pb-16 max-w-160">
       <Toaster
         toastOptions={{
           style: {
@@ -98,14 +98,14 @@ export function App() {
         }}
       />
       <header className="flex flex-col gap-3 sm:gap-4">
-        <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase sm:text-[13px]">
+        <p className="font-semibold text-muted sm:text-[13px] text-xs uppercase tracking-[0.12em]">
           Todo App
         </p>
-        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-          <h1 className="font-display text-[38px] leading-none font-bold tracking-tight sm:text-[56px]">
+        <div className="flex flex-wrap justify-between items-end gap-x-6 gap-y-3">
+          <h1 className="font-display font-bold text-[38px] sm:text-[56px] leading-none tracking-tight">
             What needs doing
           </h1>
-          <p role="status" className="pb-1 text-sm text-muted sm:text-[15px]">
+          <p role="status" className="pb-1 text-muted sm:text-[15px] text-sm">
             {loading ? (
               "Loading your tasks…"
             ) : total === 0 ? (
@@ -121,10 +121,10 @@ export function App() {
         {total > 0 && (
           <div
             aria-hidden="true"
-            className="h-1 overflow-hidden rounded-full bg-line"
+            className="bg-line rounded-full h-1 overflow-hidden"
           >
             <div
-              className="h-1 rounded-full bg-ink transition-[width] duration-300"
+              className="bg-ink rounded-full h-1 transition-[width] duration-300"
               style={{ width: `${(done / total) * 100}%` }}
             />
           </div>

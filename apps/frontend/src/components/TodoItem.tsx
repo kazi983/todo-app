@@ -3,11 +3,11 @@ import type { Todo } from "@/types";
 
 type TodoProps = {
   todo: Todo;
-  position: number;
+  priorityRank: number;
   onUpdate: (todo: Todo) => void;
 };
 
-// Colors for the top rows of the list, by position.
+// Colors for the first and second todos that are not completed.
 // Full class names are written out so Tailwind can find them in the source.
 const PRIORITY_STYLES = [
   { row: "bg-priority-1/12", ring: "border-priority-1" },
@@ -18,13 +18,13 @@ const PRIORITY_STYLES = [
  * Renders a todo item.
  * @param {TodoProps} props - The component props.
  * @param {Todo} props.todo - The todo to render.
- * @param {number} props.position - The index of the todo in the list, used to pick its priority color.
+ * @param {number} props.priorityRank - The rank among todos that are not completed (0 = first), or -1 if completed. Picks the priority color.
  * @param {(todo: Todo) => void} props.onUpdate - Callback that receives the todo returned by the API after a change.
  * @returns {JSX.Element} The todo item.
  */
-export default function TodoItem({ todo, position, onUpdate }: TodoProps) {
-  // Completed todos lose their priority color
-  const priority = todo.completed ? undefined : PRIORITY_STYLES[position];
+export default function TodoItem({ todo, priorityRank, onUpdate }: TodoProps) {
+  // Undefined (no color) for completed todos (-1) and from the third open todo on
+  const priority = PRIORITY_STYLES[priorityRank];
 
   /**
    * Toggles the completion status of a todo.
@@ -59,7 +59,7 @@ export default function TodoItem({ todo, position, onUpdate }: TodoProps) {
       <span
         data-drag-handle
         title="Drag to reorder"
-        className="flex justify-center items-center w-11 sm:w-8 h-15 text-handle cursor-grab touch-none shrink-0"
+        className="flex justify-center items-center w-11 sm:w-8 h-15 text-handle touch-none cursor-grab shrink-0"
       >
         <svg
           width="12"

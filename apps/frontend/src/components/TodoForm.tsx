@@ -63,7 +63,7 @@ export default function TodoForm({ onAdd }: TodoFormProps) {
       <label htmlFor="title" className="sr-only">
         New task
       </label>
-      <div className="flex h-13 min-w-0 flex-1 items-center gap-3 rounded-xl border border-field bg-white px-4 focus-within:border-ink sm:h-14 sm:px-5">
+      <div className="flex flex-1 items-center gap-3 bg-white px-4 sm:px-5 border border-field focus-within:border-ink rounded-xl min-w-0 h-13 sm:h-14">
         <svg
           width="18"
           height="18"
@@ -72,7 +72,7 @@ export default function TodoForm({ onAdd }: TodoFormProps) {
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
-          className="hidden shrink-0 text-done sm:block"
+          className="hidden sm:block text-done shrink-0"
           aria-hidden="true"
         >
           <path d="M12 5v14M5 12h14" />
@@ -85,14 +85,14 @@ export default function TodoForm({ onAdd }: TodoFormProps) {
           onChange={handleChange}
           placeholder="Add a task and press Enter"
           autoComplete="off"
-          className="h-full min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-done sm:text-[17px]"
+          className="flex-1 bg-transparent outline-none min-w-0 h-full sm:text-[17px] placeholder:text-done text-base"
         />
       </div>
       {/* Mobile shows a "+" icon; wider screens show the "Add" label */}
       <button
         type="submit"
         disabled={isEmpty}
-        className="flex size-13 shrink-0 cursor-pointer items-center justify-center rounded-xl bg-ink font-semibold text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-14 sm:w-auto sm:px-7"
+        className="flex justify-center items-center bg-ink disabled:opacity-35 sm:px-7 rounded-xl sm:w-auto sm:h-14 size-13 font-semibold text-white cursor-pointer disabled:cursor-not-allowed shrink-0"
       >
         <svg
           width="22"

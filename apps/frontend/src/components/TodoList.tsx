@@ -285,6 +285,12 @@ export default function TodoList({
     e.preventDefault();
   }
 
+  // Ids of the todos that are not completed, in list order. The index in this array is the
+  // priority rank: 0 and 1 get the priority colors, completed todos get -1 (not found)
+  const openIds = todos
+    .filter((todo) => !todo.completed)
+    .map((todo) => todo.id);
+
   return (
     <ul
       aria-label="Todos"
@@ -312,7 +318,11 @@ export default function TodoList({
               if (pendingPress.current || dragFrom !== null) e.preventDefault();
             }}
           >
-            <TodoItem todo={todo} position={index} onUpdate={onUpdate} />
+            <TodoItem
+              todo={todo}
+              priorityRank={openIds.indexOf(todo.id)}
+              onUpdate={onUpdate}
+            />
             {isDropTarget && (
               <div
                 className={`absolute inset-x-0 h-0.5 bg-ink ${dragFrom < index ? "bottom-0" : "top-0"}`}
