@@ -54,9 +54,11 @@ export default function TodoItem({ todo, position, onUpdate }: TodoProps) {
     <div
       className={`flex items-center gap-1 pr-4 pl-2 transition-colors ${priority?.row ?? ""}`}
     >
+      {/* touch-none: dragging the handle moves the task instead of scrolling the page */}
       <span
+        data-drag-handle
         title="Drag to reorder"
-        className="flex justify-center items-center w-8 h-15 text-handle cursor-grab shrink-0"
+        className="flex justify-center items-center w-11 sm:w-8 h-15 text-handle cursor-grab touch-none shrink-0"
       >
         <svg
           width="12"

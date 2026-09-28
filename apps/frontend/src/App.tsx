@@ -136,9 +136,18 @@ export function App() {
       />
       {total > 0 && (
         <p className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[13px] text-muted">
-          <span>Click a task to mark it done</span>
+          {/* pointer-coarse: touch screens get touch wording */}
+          <span className="pointer-coarse:hidden">
+            Click a task to mark it done
+          </span>
+          <span className="hidden pointer-coarse:inline">
+            Tap a task to mark it done
+          </span>
           <span aria-hidden="true">·</span>
-          <span>Drag a task to reorder</span>
+          <span className="pointer-coarse:hidden">Drag a task to reorder</span>
+          <span className="hidden pointer-coarse:inline">
+            Press and hold a task to reorder
+          </span>
         </p>
       )}
     </main>
