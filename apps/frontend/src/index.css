@@ -1,1 +1,33 @@
 @import "tailwindcss";
+
+/* Design tokens: usable as Tailwind classes, e.g. bg-canvas, text-muted, bg-priority-1/12 */
+@theme {
+  --font-sans: "Instrument Sans", system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+
+  --color-canvas: #f5f6f8;
+  --color-ink: #16181d;
+  --color-muted: #5f6570;
+  --color-line: #e3e6eb;
+  --color-field: #d5d9e0;
+  --color-divider: #eef0f3;
+  --color-handle: #9aa0aa;
+  --color-ring: #c4c9d1;
+  --color-done: #8a909a;
+  --color-done-text: #6f7580;
+
+  /* Row 1 and row 2 of the list */
+  --color-priority-1: #d6285a;
+  --color-priority-2: #d66a00;
+}
+
+@layer base {
+  body {
+    @apply bg-canvas font-sans text-ink;
+  }
+
+  /* Keyboard focus ring for buttons and other focusable elements */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ink;
+  }
+}

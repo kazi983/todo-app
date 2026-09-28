@@ -1,25 +1,36 @@
-import { useState } from "react";
 import toast from "react-hot-toast";
 import type { Todo } from "@/types";
 
 type TodoProps = {
   todo: Todo;
+  position: number;
+  onUpdate: (todo: Todo) => void;
 };
+
+// Colors for the top rows of the list, by position.
+// Full class names are written out so Tailwind can find them in the source.
+const PRIORITY_STYLES = [
+  { row: "bg-priority-1/12", ring: "border-priority-1" },
+  { row: "bg-priority-2/12", ring: "border-priority-2" },
+];
 
 /**
  * Renders a todo item.
  * @param {TodoProps} props - The component props.
  * @param {Todo} props.todo - The todo to render.
+ * @param {number} props.position - The index of the todo in the list, used to pick its priority color.
+ * @param {(todo: Todo) => void} props.onUpdate - Callback that receives the todo returned by the API after a change.
  * @returns {JSX.Element} The todo item.
  */
-export default function TodoItem({ todo }: TodoProps) {
-  const [completed, setCompleted] = useState<boolean>(todo.completed);
+export default function TodoItem({ todo, position, onUpdate }: TodoProps) {
+  // Completed todos lose their priority color
+  const priority = todo.completed ? undefined : PRIORITY_STYLES[position];
 
   /**
    * Toggles the completion status of a todo.
    */
   function toggleComplete() {
-    const body = { title: todo.title, completed: !completed };
+    const body = { title: todo.title, completed: !todo.completed };
 
     fetch(`/api/todos/${todo.id}`, {
       method: "PUT",
@@ -32,23 +43,79 @@ export default function TodoItem({ todo }: TodoProps) {
         return res.json();
       })
       .then((data) => {
-        setCompleted(data.completed);
+        onUpdate(data);
       })
       .catch((err) => {
-        toast.error(`API error: \n${err.message}`);
+        toast.error(`Couldn't update this task. (${err.message})`);
       });
   }
 
   return (
     <div
-      className={`shadow px-4 py-2 round-sm delay-100 cursor-pointer ${completed ? "bg-slate-400 text-slate-300" : "bg-slate-100"}`}
-      onClick={toggleComplete}
+      className={`flex items-center gap-1 pr-4 pl-2 transition-colors ${priority?.row ?? ""}`}
     >
-      <div
-        className={`delay-100 ${completed ? "line-through decoration-slite-300" : ""}`}
+      <span
+        title="Drag to reorder"
+        className="flex justify-center items-center w-8 h-15 text-handle cursor-grab shrink-0"
       >
-        {todo.title}
-      </div>
+        <svg
+          width="12"
+          height="18"
+          viewBox="0 0 12 18"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <circle cx="3" cy="3" r="1.5" />
+          <circle cx="9" cy="3" r="1.5" />
+          <circle cx="3" cy="9" r="1.5" />
+          <circle cx="9" cy="9" r="1.5" />
+          <circle cx="3" cy="15" r="1.5" />
+          <circle cx="9" cy="15" r="1.5" />
+        </svg>
+      </span>
+      <button
+        type="button"
+        onClick={toggleComplete}
+        aria-pressed={todo.completed}
+        className="flex flex-1 items-center gap-4 min-h-15 text-left cursor-pointer"
+      >
+        <span
+          className={`flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors
+             ${
+               todo.completed
+                 ? "border-done bg-done"
+                 : (priority?.ring ?? "border-ring")
+             }
+            `}
+        >
+          {todo.completed && (
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12.5l4.5 4.5L19 7.5" />
+            </svg>
+          )}
+        </span>
+        <span
+          className={`text-base leading-snug transition-colors sm:text-[17px] ${
+            todo.completed
+              ? "text-done-text line-through decoration-handle"
+              : priority
+                ? "font-medium"
+                : ""
+          }`}
+        >
+          {todo.title}
+        </span>
+      </button>
     </div>
   );
 }
