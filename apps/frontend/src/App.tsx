@@ -16,9 +16,10 @@ export function App() {
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/todos", { method: "GET", signal: controller.signal })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Failed to fetch todos: ${res.status}`);
-        return res.json();
+      .then(async (res) => {
+        const body = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(`${body.error}: ${res.status}`);
+        return body;
       })
       .then((data) => {
         setTodos(data);
@@ -67,8 +68,10 @@ export function App() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ids: reordered.map((todo) => todo.id) }),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Failed to save order: ${res.status}`);
+      .then(async (res) => {
+        const body = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(`${body.error}: ${res.status}`);
+        return body;
       })
       .catch((err) => {
         setTodos(previous);

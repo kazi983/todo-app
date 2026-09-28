@@ -35,9 +35,10 @@ export default function TodoForm({ onAdd }: TodoFormProps) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Failed to save todos: ${res.status}`);
-        return res.json();
+      .then(async (res) => {
+        const body = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(`${body.error}: ${res.status}`);
+        return body;
       })
       .then((data) => {
         onAdd(data);
