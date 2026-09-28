@@ -40,7 +40,10 @@ export default function TodoItem({ todo, priorityRank, onUpdate }: TodoProps) {
       .then(async (res) => {
         const body = await res.json().catch(() => null);
         console.log(body);
-        if (!res.ok) throw new Error(`${body.error}: ${res.status}`);
+        if (!res.ok)
+          throw new Error(
+            `${[body.error, body.message || ""].join(" | ")}: ${res.status}`,
+          );
         return body;
       })
       .then((data) => {

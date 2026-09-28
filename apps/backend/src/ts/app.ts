@@ -4,12 +4,12 @@ import express, {
   type Response,
   type NextFunction,
 } from "express";
+import * as fs from "fs";
+import * as path from "path";
 
 import type { Todo } from "./types.ts";
 
-// ==========================================================================
-// Types
-// ==========================================================================
+const DATA_FILE = path.join(import.meta.dirname, "../../data/todos.json");
 
 /**
  * Creates and configures an Express application with routes for managing todos.
@@ -28,6 +28,12 @@ export function createApp() {
 
   const todos: Todo[] = [];
   let latestId = 0;
+  fs.readFile(DATA_FILE, "utf-8", (err, data) => {
+    if (err?.code !== "ENOENT" && data) {
+      todos.push(...(JSON.parse(data) as Todo[]));
+      latestId = Math.max(0, ...todos.map((todo) => todo.id));
+    }
+  });
 
   // ==========================================================================
   // Utility functions
@@ -50,7 +56,7 @@ export function createApp() {
    * @param {string} message - An optional error message.
    */
   function send404(res: Response, message: string = "") {
-    res.status(404).json({ error: "Todo not found.", message });
+    res.status(404).json({ error: "Todo not found", message });
   }
 
   // ==========================================================================
@@ -79,7 +85,7 @@ export function createApp() {
     const todo = todos.find((todo) => todo.id === id);
 
     if (!todo) {
-      send404(res, `ID "${id}" does not exist.`);
+      send404(res, `ID "${id}" does not exist`);
       return;
     }
 
@@ -94,7 +100,14 @@ export function createApp() {
 
     if (typeof body.title !== "string" || body.title.trim() === "") {
       res.status(400).json({
-        error: "Missing field: title.",
+        error: "Missing field: title",
+      });
+      return;
+    }
+
+    if (typeof body.completed !== "boolean") {
+      res.status(400).json({
+        error: "Invalid field: completed",
       });
       return;
     }
@@ -107,12 +120,20 @@ export function createApp() {
 
     todos.push(newTodo);
 
-    res.status(201).json(newTodo);
+    fs.writeFile(DATA_FILE, JSON.stringify(todos), "utf8", (err) => {
+      if (err) {
+        todos.pop();
+        res.status(500).json({ error: "Error writing file" });
+        return;
+      }
+      res.status(201).json(newTodo);
+    });
   });
 
   // PUT /todos/order
   app.put("/todos/order", (req: Request, res: Response) => {
     const orderedIds = (req.body ?? {}).ids;
+    const oldTodos = [...todos];
 
     const isValid =
       Array.isArray(orderedIds) &&
@@ -122,14 +143,21 @@ export function createApp() {
 
     if (!isValid) {
       res.status(400).json({
-        error: "Invalid field: ids must contain every todo id exactly once.",
+        error: "Invalid field: ids must contain every todo id exactly once",
       });
       return;
     }
 
     todos.sort((a, b) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
 
-    res.status(200).json(todos);
+    fs.writeFile(DATA_FILE, JSON.stringify(todos), "utf8", (err) => {
+      if (err) {
+        todos.splice(0, todos.length, ...oldTodos);
+        res.status(500).json({ error: "Error writing file" });
+        return;
+      }
+      res.status(200).json(todos);
+    });
   });
 
   // PUT /todos/:id
@@ -139,7 +167,7 @@ export function createApp() {
     const todo = todos.find((todo) => todo.id === id);
 
     if (!todo) {
-      send404(res, `ID "${id}" does not exist.`);
+      send404(res, `ID "${id}" does not exist`);
       return;
     }
 
@@ -156,15 +184,24 @@ export function createApp() {
 
     if (invalidFields.length > 0) {
       res.status(400).json({
-        error: `Invalid or missing field(s): ${invalidFields.join(", ")}.`,
+        error: `Invalid or missing field(s): ${invalidFields.join(", ")}`,
       });
       return;
     }
 
+    const prev = { ...todo };
     todo.title = body.title;
     todo.completed = Boolean(body.completed);
 
-    res.status(200).json(todo);
+    fs.writeFile(DATA_FILE, JSON.stringify(todos), "utf8", (err) => {
+      if (err) {
+        todo.title = prev.title;
+        todo.completed = prev.completed;
+        res.status(500).json({ error: "Error writing file" });
+        return;
+      }
+      res.status(200).json(todo);
+    });
   });
 
   // DELETE /todos/:id
@@ -174,19 +211,26 @@ export function createApp() {
     const index = todos.findIndex((todo) => todo.id === id);
 
     if (index === -1) {
-      send404(res, `ID "${id}" does not exist.`);
+      send404(res, `ID "${id}" does not exist`);
       return;
     }
 
-    todos.splice(index, 1);
+    const [removed] = todos.splice(index, 1);
 
-    // Automatically set to the default HTTP status message
-    res.sendStatus(204);
+    fs.writeFile(DATA_FILE, JSON.stringify(todos), "utf8", (err) => {
+      if (err) {
+        todos.splice(index, 0, removed);
+        res.status(500).json({ error: "Error writing file" });
+        return;
+      }
+      // Automatically set to the default HTTP status message
+      res.sendStatus(204);
+    });
   });
 
   // Handle requests to undefined routes.
   app.use((_req: Request, res: Response) => {
-    res.status(404).json({ error: "Invalid URL." });
+    res.status(404).json({ error: "Invalid URL" });
   });
 
   return app;
